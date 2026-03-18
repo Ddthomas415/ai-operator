@@ -1,0 +1,149 @@
+1. input: write a file named demo.py with print("yo")
+   action: write_file
+   filename: demo.py
+   clarification_needed: false
+
+2. input: read demo.py
+   action: read_file
+   filename: demo.py
+   clarification_needed: false
+
+3. input: make me a python file that prints hello
+   action: write_file
+   filename:
+   clarification_needed: true
+
+4. input: open my file
+   action: none
+   filename:
+   clarification_needed: true
+
+5. input: write a file named app.py with print("hello world")
+   action: write_file
+   filename: app.py
+   clarification_needed: false
+
+6. input: read app.py
+   action: read_file
+   filename: app.py
+   clarification_needed: false
+
+7. input: create script.py that adds two numbers
+   action: write_file
+   filename: script.py
+   clarification_needed: false
+
+8. input: read the python file called script.py
+   action: read_file
+   filename: script.py
+   clarification_needed: false
+
+9. input: make a file for me
+   action: write_file
+   filename:
+   clarification_needed: true
+
+10. input: show me my code
+    action: none
+    filename:
+    clarification_needed: true
+
+11. input: write a file named notes.py with x = 1
+    action: write_file
+    filename: notes.py
+    clarification_needed: false
+
+12. input: read notes.py
+    action: read_file
+    filename: notes.py
+    clarification_needed: false
+
+13. input: create main.py with print("start")
+    action: write_file
+    filename: main.py
+    clarification_needed: false
+
+14. input: read main.py
+    action: read_file
+    filename: main.py
+    clarification_needed: false
+
+15. input: write a python file
+    action: write_file
+    filename:
+    clarification_needed: true
+
+16. input: read the file
+    action: read_file
+    filename:
+    clarification_needed: true
+
+17. input: make calc.py with a function that returns 2 + 2
+    action: write_file
+    filename: calc.py
+    clarification_needed: false
+
+18. input: read calc.py
+    action: read_file
+    filename: calc.py
+    clarification_needed: false
+
+19. input: show me demo
+    action: none
+    filename:
+    clarification_needed: true
+
+20. input: create a file for logging
+    action: write_file
+    filename:
+    clarification_needed: true
+
+21. input: write a file named hello.py with print("hello")
+    action: write_file
+    filename: hello.py
+    clarification_needed: false
+
+22. input: read hello.py
+    action: read_file
+    filename: hello.py
+    clarification_needed: false
+
+23. input: create util.py with a function named add
+    action: write_file
+    filename: util.py
+    clarification_needed: false
+
+24. input: read util.py
+    action: read_file
+    filename: util.py
+    clarification_needed: false
+
+25. input: make a new python script
+    action: write_file
+    filename:
+    clarification_needed: true
+
+26. input: show me the file contents
+    action: read_file
+    filename:
+    clarification_needed: true
+
+27. input: create parser.py with a function that splits text
+    action: write_file
+    filename: parser.py
+    clarification_needed: false
+
+28. input: read parser.py
+    action: read_file
+    filename: parser.py
+    clarification_needed: false
+
+29. input: open parser
+    action: none
+    filename:
+    clarification_needed: true
+
+30. input: write code for me
+    action: write_file
+    filename:
+    clarification_needed: true
