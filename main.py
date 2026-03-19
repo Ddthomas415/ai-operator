@@ -1,8 +1,15 @@
 import sys
-from planner.classifier import classify
-from planner.generator import generate
-from executor.actions import write_file, read_file
+
 from logger import log_event
+from workflow import (
+    build_payload,
+    execute_action,
+    first_clarification_step,
+    plan_needs_clarification,
+    plan_request,
+    requires_overwrite_confirmation,
+)
+
 
 def main() -> None:
     if len(sys.argv) < 2:
@@ -10,40 +17,81 @@ def main() -> None:
         raise SystemExit(1)
 
     user_input = " ".join(sys.argv[1:])
-    result = classify(user_input)
+    plan = plan_request(user_input)
 
-    print("CLASSIFIER:")
-    print(result)
+    print("PLAN:")
+    print(plan.to_dict())
 
-    if result["clarification_needed"]:
+    if plan_needs_clarification(plan):
+        step_index = first_clarification_step(plan)
+        step = plan.steps[step_index] if step_index is not None else None
         print("\nCLARIFICATION NEEDED:")
-        print(result["clarification_question"])
-        log_event(user_input, result["action"], result["confidence"], "clarification_needed")
+        print(step.clarification_question if step is not None else "More information is required.")
+        log_event(
+            user_input,
+            step.action if step is not None else "none",
+            step.confidence if step is not None else 0.0,
+            "clarification_needed",
+            message=step.clarification_question if step is not None else "More information is required.",
+        )
         return
 
-    payload = generate(user_input, result["action"])
-    print("\nGENERATOR:")
-    print(payload)
-
-    try:
-        if result["action"] == "read_file":
-            output = read_file(payload["filename"])
-            print(output)
-            log_event(user_input, result["action"], result["confidence"], "ok")
+    outputs: list[str] = []
+    for step in plan.steps:
+        if step.action == "none":
+            print("\nERROR:")
+            print("No supported action.")
+            log_event(
+                step.step_input,
+                step.action,
+                step.confidence,
+                "unsupported",
+                message=step.reason,
+            )
             return
 
-        if result["action"] == "write_file":
-            output = write_file(payload["filename"], payload["content"])
-            print(output)
-            log_event(user_input, result["action"], result["confidence"], "ok")
+        try:
+            payload = build_payload(step.step_input, step.action)
+            print("\nGENERATOR:")
+            print({"step_input": step.step_input, "payload": payload})
+            if requires_overwrite_confirmation(step.action, payload):
+                message = f"{payload['filename']} already exists. Refusing to overwrite in one-shot mode."
+                print("\nERROR:")
+                print(message)
+                log_event(
+                    step.step_input,
+                    step.action,
+                    step.confidence,
+                    "error",
+                    error_type="FileExistsError",
+                    message=message,
+                )
+                return
+            output = execute_action(step.action, payload)
+            outputs.append(output)
+            log_event(
+                step.step_input,
+                step.action,
+                step.confidence,
+                "ok",
+                message=output,
+            )
+        except (ValueError, FileExistsError, FileNotFoundError) as e:
+            print(f"\nERROR: {e}")
+            log_event(
+                step.step_input,
+                step.action,
+                step.confidence,
+                "error",
+                error_type=type(e).__name__,
+                message=str(e),
+            )
             return
 
-        print("\nNo supported action.")
-        log_event(user_input, result["action"], result["confidence"], "unsupported")
+    print("\nOUTPUT:")
+    for output in outputs:
+        print(output)
 
-    except ValueError as e:
-        print(f"\nERROR: {e}")
-        log_event(user_input, result["action"], result["confidence"], f"error: {e}")
 
 if __name__ == "__main__":
     main()

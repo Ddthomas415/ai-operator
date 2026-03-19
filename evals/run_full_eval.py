@@ -4,39 +4,51 @@ from planner.generator import generate
 CASES = [
     ("write a file named demo.py with print(\"yo\")", "write_file", "demo.py", False, 'print("yo")'),
     ("read demo.py", "read_file", "demo.py", False, None),
+    ("edit demo.py with print(\"updated\")", "edit_file", "demo.py", False, 'print("updated")'),
+    ("list workspace files", "list_workspace", "", False, None),
     ("make me a python file that prints hello", "write_file", "", True, None),
     ("open my file", "none", "", True, None),
     ("write a file named app.py with print(\"hello world\")", "write_file", "app.py", False, 'print("hello world")'),
     ("read app.py", "read_file", "app.py", False, None),
+    ("show hello.py?", "read_file", "hello.py", False, None),
+    ("generate helper.py containing print(\"ready\")", "write_file", "helper.py", False, 'print("ready")'),
+    ("read the file", "read_file", "", True, None),
+    ("write a python file", "write_file", "", True, None),
 ]
 
-passed = 0
+def run() -> tuple[int, int]:
+    passed = 0
 
-for i, (text, expected_action, expected_filename, expected_clarification, expected_content) in enumerate(CASES, 1):
-    c = classify(text)
+    for i, (text, expected_action, expected_filename, expected_clarification, expected_content) in enumerate(CASES, 1):
+        c = classify(text)
 
-    action_ok = c["action"] == expected_action
-    clarification_ok = c["clarification_needed"] == expected_clarification
-    filename_ok = c["filename"] == expected_filename
+        action_ok = c["action"] == expected_action
+        clarification_ok = c["clarification_needed"] == expected_clarification
+        filename_ok = c["filename"] == expected_filename
 
-    content_ok = True
-    if not c["clarification_needed"] and c["action"] in {"write_file", "read_file"}:
-        g = generate(text, c["action"])
-        filename_ok = g.get("filename", "") == expected_filename
-        if expected_content is not None:
-            content_ok = g.get("content") == expected_content
+        content_ok = True
+        if not c["clarification_needed"] and c["action"] in {"write_file", "read_file", "edit_file", "list_workspace"}:
+            g = generate(text, c["action"])
+            filename_ok = g.get("filename", "") == expected_filename
+            if expected_content is not None:
+                content_ok = g.get("content") == expected_content
 
-    ok = action_ok and clarification_ok and filename_ok and content_ok
-    print(f"{i}. {'PASS' if ok else 'FAIL'}")
+        ok = action_ok and clarification_ok and filename_ok and content_ok
+        print(f"{i}. {'PASS' if ok else 'FAIL'}")
 
-    if ok:
-        passed += 1
-    else:
-        print(" input:   ", text)
-        print(" expected:", expected_action, expected_filename, expected_clarification, expected_content)
-        print(" got:     ", c)
-        if not c["clarification_needed"] and c["action"] in {"write_file", "read_file"}:
-            print(" payload: ", generate(text, c["action"]))
-        print()
+        if ok:
+            passed += 1
+        else:
+            print(" input:   ", text)
+            print(" expected:", expected_action, expected_filename, expected_clarification, expected_content)
+            print(" got:     ", c)
+            if not c["clarification_needed"] and c["action"] in {"write_file", "read_file", "edit_file", "list_workspace"}:
+                print(" payload: ", generate(text, c["action"]))
+            print()
 
-print(f"Passed {passed}/{len(CASES)}")
+    print(f"Passed {passed}/{len(CASES)}")
+    return passed, len(CASES)
+
+
+if __name__ == "__main__":
+    run()
