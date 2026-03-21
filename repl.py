@@ -198,7 +198,11 @@ def main() -> None:
     print("Type 'transcript' to show the saved session transcript.\n")
 
     while True:
-        user_input = input("task> ").strip()
+        try:
+            user_input = input("task> ").strip()
+        except KeyboardInterrupt:
+            print("\nGoodbye.")
+            break
         if user_input.lower() in EXIT_WORDS:
             print("Goodbye.")
             break
