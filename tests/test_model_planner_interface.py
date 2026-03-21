@@ -10,6 +10,7 @@ def test_plan_request_defaults_to_heuristic():
     assert isinstance(result, ActionPlan)
     assert len(result.steps) == 1
     assert result.steps[0].action == "write_file"
+    assert getattr(result, "planner_mode", None) == "heuristic"
 
 
 def test_plan_request_falls_back_when_model_not_configured():
@@ -21,5 +22,6 @@ def test_plan_request_falls_back_when_model_not_configured():
     assert isinstance(result, ActionPlan)
     assert len(result.steps) == 1
     assert result.steps[0].action == "read_file"
+    assert getattr(result, "planner_mode", None) == "model_fallback"
 
     os.environ.pop("AI_OPERATOR_USE_MODEL_PLANNER", None)

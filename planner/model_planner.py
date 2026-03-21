@@ -9,9 +9,6 @@ from openai import OpenAI
 from planner.parsing import split_into_steps
 from planner.schema import ActionPlan, ActionStep
 
-# Human Review Required: set AI_OPERATOR_MODEL to a supported model in your account.
-# Human Review Required: requires OPENAI_API_KEY in the environment.
-
 SYSTEM_PROMPT = """You are the planning layer for a local Python file operator.
 
 Return JSON only.
@@ -63,9 +60,7 @@ def _configured() -> bool:
 
 
 def _step_to_payload(action: str, filename: str, content: str) -> dict[str, Any]:
-    if action == "write_file":
-        return {"filename": filename, "content": content}
-    if action == "edit_file":
+    if action in {"write_file", "edit_file"}:
         return {"filename": filename, "content": content}
     if action == "read_file":
         return {"filename": filename}
@@ -78,7 +73,9 @@ def plan_with_model(user_input: str) -> ActionPlan:
     """
     Real model-backed planner.
 
-    Falls back should be handled by planner_interface.py, not here.
+    Assumptions:
+    - OPENAI_API_KEY and AI_OPERATOR_MODEL are set.
+    - Caller decides whether to fall back on failure.
     """
     if not _model_enabled():
         raise RuntimeError("Model planner is disabled.")
@@ -125,4 +122,7 @@ def plan_with_model(user_input: str) -> ActionPlan:
             )
         )
 
-    return ActionPlan(original_input=user_input, steps=steps)
+    plan = ActionPlan(original_input=user_input, steps=steps)
+    # Inline annotation so downstream code/tests can inspect which planner path ran.
+    setattr(plan, "planner_mode", "model")
+    return plan
