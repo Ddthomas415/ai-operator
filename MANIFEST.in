@@ -1,0 +1,6 @@
+prune tests
+prune logs
+prune workspace
+prune readme_examples
+exclude .env
+prune evals

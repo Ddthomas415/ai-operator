@@ -12,7 +12,6 @@ What is true right now:
 - the repo is suitable for controlled expansion
 - the main remaining work is:
   - documentation truth
-  - packaging decision
   - maintainability cleanup
 
 ## Priority Checklist
@@ -33,7 +32,7 @@ What is true right now:
   - [x] `python -m evals.run_all`
   - [x] `./scripts/verify_clean_install.sh`
   - [x] `python -m build`
-- [ ] decide whether `evals/` should ship in the package
+- [x] decide that `evals/` should NOT ship in the package
 
 ## P3 — Governance / Logging Policy
 - [x] define transcript/log policy
@@ -65,5 +64,4 @@ What is true right now:
 
 1. update and commit `HANDOFF.md` and `GIT_TASKS.md`
 2. verify baseline still passes
-3. decide whether `evals/` should ship in the package
-4. do maintainability refactor
+3. do maintainability refactor
