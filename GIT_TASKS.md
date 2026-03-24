@@ -12,7 +12,7 @@ What is true right now:
 - the repo is suitable for controlled expansion
 - the main remaining work is:
   - documentation truth
-  - transcript/log policy
+  - packaging decision
   - maintainability cleanup
   - packaging decision
 
@@ -37,10 +37,10 @@ What is true right now:
 - [ ] decide whether `evals/` should ship in the package
 
 ## P3 — Governance / Logging Policy
-- [ ] define transcript/log policy
-  - [ ] local personal use only
-  - [ ] plaintext acceptable for now
-  - [ ] future expansion requires retention/redaction review
+- [x] define transcript/log policy
+  - [x] local personal use only
+  - [x] plaintext acceptable for now
+  - [x] future expansion requires retention/redaction review
 
 ## P4 — Small Cleanup
 - [x] replace deprecated `datetime.utcnow()` usage in `session_store.py`
@@ -66,6 +66,5 @@ What is true right now:
 
 1. update and commit `HANDOFF.md` and `GIT_TASKS.md`
 2. verify baseline still passes
-3. document transcript/log policy
+3. decide whether `evals/` should ship in the package
 4. do maintainability refactor
-5. decide whether `evals/` should ship in the package
