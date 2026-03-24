@@ -1,6 +1,7 @@
 import sys
 
 from logger import log_event
+from repl_clarification import resolve_clarification
 from repl_session import load_previous_events, resolve_session_from_args
 from repl_ui import handle_builtin_command, show_session_banner
 from session_store import (
@@ -46,71 +47,40 @@ def run_once(user_input: str, session_id: str) -> None:
     print(plan.to_dict())
     append_session_event(session_id, "plan", {"step_count": len(plan.steps), "plan": plan.to_dict()})
 
-    if plan_needs_clarification(plan):
+    try:
+        user_input, plan, filename_override = resolve_clarification(
+            user_input=user_input,
+            plan=plan,
+            prompt_func=_prompt,
+            append_session_event=append_session_event,
+            session_id=session_id,
+        )
+    except ValueError as e:
+        print(f"\nERROR: {e}")
         step_index = first_clarification_step(plan)
         step = plan.steps[step_index] if step_index is not None else None
-        print("\nCLARIFICATION NEEDED:")
-        print(step.clarification_question if step is not None else "More information is required.")
-        append_session_event(
-            session_id,
-            "clarification_question",
-            {"question": step.clarification_question if step is not None else "More information is required."},
+        log_event(
+            user_input,
+            step.action if step is not None else "none",
+            step.confidence if step is not None else 0.0,
+            "error",
+            error_type=type(e).__name__,
+            message=str(e),
         )
-        answer = _prompt("> ")
-        if answer is None:
-            print("Goodbye.")
-            raise SystemExit(0)
-        append_session_event(session_id, "clarification_answer", {"answer": answer})
-        if not answer:
-            print("\nERROR: Clarification answer cannot be empty.")
-            log_event(
-                user_input,
-                step.action if step is not None else "none",
-                step.confidence if step is not None else 0.0,
-                "error",
-                error_type="ValidationError",
-                message="Clarification answer cannot be empty.",
-            )
-            append_session_event(
-                session_id,
-                "error",
-                {"message": "Clarification answer cannot be empty."},
-            )
-            return
-
-        if step is not None and step.action in {"write_file", "read_file", "edit_file"}:
-            try:
-                filename_override = validate_clarification_answer(answer)
-            except ValueError as e:
-                print(f"\nERROR: {e}")
-                log_event(
-                    user_input,
-                    step.action,
-                    step.confidence,
-                    "error",
-                    error_type=type(e).__name__,
-                    message=str(e),
-                )
-                append_session_event(session_id, "error", {"message": str(e)})
-                return
-        else:
-            result = classify_follow_up(answer)
-            print("\nCLASSIFIER:")
-            print(result)
-            if result["clarification_needed"]:
-                print("\nERROR: Unsupported request after clarification.")
-                log_event(
-                    user_input,
-                    result["action"],
-                    result["confidence"],
-                    "unsupported",
-                    message=result["reason"],
-                )
-                append_session_event(session_id, "error", {"message": result["reason"]})
-                return
-            user_input = answer
-            plan = plan_request(answer)
-            append_session_event(session_id, "plan", {"step_count": len(plan.steps), "plan": plan.to_dict()})
+        append_session_event(session_id, "error", {"message": str(e)})
+        return
+    except RuntimeError as e:
+        print("\nERROR: Unsupported request after clarification.")
+        result = classify_follow_up(str(e))
+        log_event(
+            user_input,
+            result.get("action", "none"),
+            result.get("confidence", 0.0),
+            "unsupported",
+            message=str(e),
+        )
+        append_session_event(session_id, "error", {"message": str(e)})
+        return
 
     outputs: list[str] = []
     for index, step in enumerate(plan.steps):
