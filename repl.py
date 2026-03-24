@@ -2,6 +2,7 @@ import sys
 
 from logger import log_event
 from repl_clarification import resolve_clarification
+from repl_execution import execute_plan_steps, report_outputs
 from repl_session import load_previous_events, resolve_session_from_args
 from repl_ui import handle_builtin_command, show_session_banner
 from session_store import (
@@ -13,13 +14,10 @@ from session_store import (
     start_session,
 )
 from workflow import (
-    build_payload,
     classify_follow_up,
-    execute_action,
     first_clarification_step,
     plan_needs_clarification,
     plan_request,
-    requires_overwrite_confirmation,
     validate_clarification_answer,
 )
 
@@ -82,8 +80,7 @@ def run_once(user_input: str, session_id: str) -> None:
         append_session_event(session_id, "error", {"message": str(e)})
         return
 
-    outputs: list[str] = []
-    for index, step in enumerate(plan.steps):
+    for step in plan.steps:
         if step.action == "none":
             print("\nERROR: No supported action.")
             log_event(
@@ -96,54 +93,28 @@ def run_once(user_input: str, session_id: str) -> None:
             append_session_event(session_id, "error", {"message": step.reason})
             return
 
-        try:
-            override = filename_override if index == 0 else None
-            payload = build_payload(step.step_input, step.action, filename_override=override)
-            print("\nGENERATOR:")
-            print({"step_input": step.step_input, "payload": payload})
+    try:
+        outputs = execute_plan_steps(
+            plan=plan,
+            session_id=session_id,
+            filename_override=filename_override,
+            confirm_overwrite=_confirm_overwrite,
+        )
+    except (ValueError, FileExistsError, FileNotFoundError) as e:
+        print(f"\nERROR: {e}")
+        step = plan.steps[0] if plan.steps else None
+        log_event(
+            step.step_input if step is not None else user_input,
+            step.action if step is not None else "none",
+            step.confidence if step is not None else 0.0,
+            "error",
+            error_type=type(e).__name__,
+            message=str(e),
+        )
+        append_session_event(session_id, "error", {"message": str(e)})
+        return
 
-            allow_overwrite = False
-            if requires_overwrite_confirmation(step.action, payload):
-                if not _confirm_overwrite(payload["filename"]):
-                    print("\nERROR: Overwrite canceled.")
-                    log_event(
-                        step.step_input,
-                        step.action,
-                        step.confidence,
-                        "error",
-                        error_type="FileExistsError",
-                        message="Overwrite canceled by user.",
-                    )
-                    append_session_event(session_id, "error", {"message": "Overwrite canceled by user."})
-                    return
-                allow_overwrite = True
-
-            output = execute_action(step.action, payload, allow_overwrite=allow_overwrite)
-            outputs.append(output)
-            log_event(
-                step.step_input,
-                step.action,
-                step.confidence,
-                "ok",
-                message=output,
-            )
-            append_session_event(session_id, "output", {"message": output})
-        except (ValueError, FileExistsError, FileNotFoundError) as e:
-            print(f"\nERROR: {e}")
-            log_event(
-                step.step_input,
-                step.action,
-                step.confidence,
-                "error",
-                error_type=type(e).__name__,
-                message=str(e),
-            )
-            append_session_event(session_id, "error", {"message": str(e)})
-            return
-
-    print("\nOUTPUT:")
-    for output in outputs:
-        print(output)
+    report_outputs(outputs)
 
 
 def _resolve_session_from_args(argv: list[str]) -> str:
