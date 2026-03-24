@@ -38,3 +38,15 @@ def test_corrupted_session_file_raises(tmp_path, monkeypatch):
 
     with pytest.raises(Exception):
         session_store.load_session_events("broken")
+
+def test_overwrite_confirm_yes(monkeypatch):
+    monkeypatch.setattr(repl, "_prompt", lambda _: "y")
+    assert repl._confirm_overwrite("demo.py") is True
+
+def test_overwrite_confirm_no(monkeypatch):
+    monkeypatch.setattr(repl, "_prompt", lambda _: "n")
+    assert repl._confirm_overwrite("demo.py") is False
+
+def test_overwrite_confirm_empty_defaults_no(monkeypatch):
+    monkeypatch.setattr(repl, "_prompt", lambda _: "")
+    assert repl._confirm_overwrite("demo.py") is False
