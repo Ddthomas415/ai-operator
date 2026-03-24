@@ -49,10 +49,10 @@ What is true right now:
   - [ ] prompt/session UI
   - [ ] clarification flow
   - [ ] execution/reporting
-- [ ] add docstrings to:
-  - [ ] `workflow.py`
-  - [ ] `repl.py`
-  - [ ] `session_store.py`
+- [x] add docstrings to:
+  - [x] `workflow.py`
+  - [x] `repl.py`
+  - [x] `session_store.py`
 
 ## P6 — Expansion Guardrails
 - [x] keep heuristic planner as default
