@@ -14,7 +14,6 @@ What is true right now:
   - documentation truth
   - packaging decision
   - maintainability cleanup
-  - packaging decision
 
 ## Priority Checklist
 
