@@ -147,6 +147,13 @@ def run_once(user_input: str, session_id: str) -> None:
 
 
 def _resolve_session_from_args(argv: list[str]) -> str:
+    """Resolve the session id from CLI arguments.
+
+    Supported forms:
+    - no args: start a new session
+    - --resume <session_id>: resume that exact session
+    - --resume-last: resume the most recent session
+    """
     if len(argv) >= 3 and argv[1] == "--resume":
         return start_session(argv[2])
     if len(argv) >= 2 and argv[1] == "--resume-last":
@@ -158,6 +165,7 @@ def _resolve_session_from_args(argv: list[str]) -> str:
 
 
 def main() -> None:
+    """Run the interactive REPL loop for the local operator."""
     session_id = _resolve_session_from_args(sys.argv)
     previous_events = load_session_events(session_id)
 

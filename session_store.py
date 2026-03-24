@@ -8,10 +8,12 @@ LATEST_FILE = SESSIONS_DIR / "latest.txt"
 
 
 def _session_path(session_id: str) -> Path:
+    """Return the JSONL transcript path for a session id."""
     return SESSIONS_DIR / f"{session_id}.jsonl"
 
 
 def start_session(session_id: str | None = None) -> str:
+    """Create or resume a session and mark it as the latest session."""
     SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
     resolved = session_id or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ-") + uuid4().hex[:8]
     path = _session_path(resolved)
@@ -22,12 +24,14 @@ def start_session(session_id: str | None = None) -> str:
 
 
 def latest_session_id() -> str | None:
+    """Return the latest known session id, or None if none exists."""
     if not LATEST_FILE.exists():
         return None
     return LATEST_FILE.read_text(encoding="utf-8").strip() or None
 
 
 def append_session_event(session_id: str, event_type: str, payload: dict) -> None:
+    """Append one event row to the session transcript JSONL file."""
     SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
     row = {
         "ts": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
@@ -39,6 +43,7 @@ def append_session_event(session_id: str, event_type: str, payload: dict) -> Non
 
 
 def load_session_events(session_id: str) -> list[dict]:
+    """Load all JSONL events for a session id."""
     path = _session_path(session_id)
     if not path.exists():
         raise FileNotFoundError(f"Session {session_id} does not exist.")
@@ -46,6 +51,7 @@ def load_session_events(session_id: str) -> list[dict]:
 
 
 def session_prompt_history(session_id: str) -> list[str]:
+    """Return only user-input prompts from a saved session."""
     prompts: list[str] = []
     for event in load_session_events(session_id):
         if event["event_type"] == "user_input":
@@ -54,6 +60,7 @@ def session_prompt_history(session_id: str) -> list[str]:
 
 
 def format_transcript(session_id: str) -> str:
+    """Render a human-readable transcript from stored session events."""
     lines: list[str] = []
     for event in load_session_events(session_id):
         event_type = event["event_type"]
