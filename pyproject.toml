@@ -16,5 +16,5 @@ ai-operator-repl = "ai_operator.repl:main"
 py-modules = ["config", "logger", "main", "repl", "session_store", "workflow"]
 
 [tool.setuptools.packages.find]
-include = ["ai_operator*", "planner*", "executor*", "evals*"]
+include = ["ai_operator*", "planner*", "executor*"]
 exclude = ["logs*", "workspace*", "readme_examples*", "tests*"]
