@@ -1,6 +1,7 @@
 import sys
 
 from logger import log_event
+from repl_session import load_previous_events, resolve_session_from_args
 from repl_ui import handle_builtin_command, show_session_banner
 from session_store import (
     append_session_event,
