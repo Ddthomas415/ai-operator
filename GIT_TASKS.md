@@ -12,9 +12,9 @@ What is true right now:
 - the repo is suitable for controlled expansion
 - the main remaining work is:
   - documentation truth
-  - remaining REPL/session end-to-end hardening
-  - CI/build enforcement
+  - transcript/log policy
   - maintainability cleanup
+  - packaging decision
 
 ## Priority Checklist
 
@@ -26,8 +26,7 @@ What is true right now:
 - [x] add REPL/session edge-case tests
 - [x] add invalid `--resume` session behavior coverage
 - [x] add corrupted session/transcript file coverage
-- [ ] add or finalize tests for:
-  - [ ] overwrite confirm/cancel paths end-to-end
+- [x] add overwrite confirm/cancel paths end-to-end
 
 ## P2 — CI / Packaging
 - [x] ensure CI runs:
@@ -67,6 +66,6 @@ What is true right now:
 
 1. update and commit `HANDOFF.md` and `GIT_TASKS.md`
 2. verify baseline still passes
-3. add remaining overwrite end-to-end coverage
-4. document transcript/log policy
-5. do maintainability refactor
+3. document transcript/log policy
+4. do maintainability refactor
+5. decide whether `evals/` should ship in the package

@@ -35,11 +35,10 @@
 
 ## Current priorities
 1. keep `HANDOFF.md` aligned with the current committed repo
-2. finalize remaining REPL/session end-to-end tests
-3. define transcript/log policy
-4. decide whether `evals/` should ship in the package
-5. refactor `repl.py` into smaller units if expansion continues
-6. only formalize `planner_mode` in schema if expansion continues
+2. define transcript/log policy
+3. decide whether `evals/` should ship in the package
+4. refactor `repl.py` into smaller units if expansion continues
+5. only formalize `planner_mode` in schema if expansion continues
 
 ## Verification commands
 - `python3 -m pytest -q`
