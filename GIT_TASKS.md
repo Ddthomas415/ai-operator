@@ -10,113 +10,65 @@ What is true right now:
 - model-backed planning is optional
 - heuristic planning remains the default
 - the repo is suitable for controlled expansion
-- the main remaining work is not core functionality
 - the main remaining work is:
-  - scope clarity
-  - documentation truth
   - interactive edge-case hardening
-  - CI enforcement
+  - documentation truth
+  - CI/build enforcement
   - maintainability cleanup
 
-## Current Git Summary
+## Priority Checklist
 
-Use this repo state as the baseline for decisions:
-- branch should be checked before work starts
-- working tree should be clean before any major doc rewrite or refactor
-- any untracked files must be either committed or removed in the same session
-- `HANDOFF.md` should reflect the actual committed state, not transient local state
-
----
-
-# Priority Checklist
-
-## P0 — Repo Truth and Source-of-Truth Cleanup
-
-- [ ] Decide the fate of `ai_engine/`
-  - [ ] keep it and explicitly scope it
-  - [ ] isolate it from the main baseline
-  - [ ] remove it
-- [ ] Resolve untracked REPL edge-case test files
-  - [ ] `tests/test_repl_clarification_interrupts.py`
-  - [ ] `tests/test_repl_edge_cases.py`
-  - [ ] commit them or delete them
-- [ ] Rewrite `HANDOFF.md`
-  - [ ] remove absolute local paths
-  - [ ] remove stale branch/version claims
-  - [ ] remove stale test/eval counts
-  - [ ] remove outdated remaining-work statements
-  - [ ] reflect the current committed repo only
+## P0 — Repo Truth
+- [x] remove `ai_engine/`
+- [x] resolve stale untracked REPL test-file issue
+- [ ] keep `HANDOFF.md` aligned with the current committed repo
 
 ## P1 — Interactive Reliability
-
-- [ ] Add or finalize tests for:
-  - [ ] `KeyboardInterrupt` at clarification prompt
-  - [ ] `EOFError` at clarification prompt
+- [x] add clarification prompt interrupt tests
+- [x] add REPL/session edge-case tests
+- [ ] add or finalize tests for:
   - [ ] overwrite confirm/cancel paths
-  - [ ] invalid `--resume` session ID
-  - [ ] corrupted session/transcript files
+  - [ ] invalid `--resume` session ID end-to-end behavior
+  - [ ] corrupted session/transcript files end-to-end behavior
 
 ## P2 — CI / Packaging
-
-- [ ] Ensure CI runs:
-  - [ ] `python -m pytest -q`
-  - [ ] `python -m evals.run_all`
-  - [ ] `./scripts/verify_clean_install.sh`
-  - [ ] `python -m build`
-  - [ ] install from built wheel
-- [ ] Decide whether `evals/` should ship in the package
+- [x] ensure CI runs:
+  - [x] `python -m pytest -q`
+  - [x] `python -m evals.run_all`
+  - [x] `./scripts/verify_clean_install.sh`
+  - [x] `python -m build`
+- [ ] decide whether `evals/` should ship in the package
 
 ## P3 — Governance / Logging Policy
-
-- [ ] Define transcript/log policy
+- [ ] define transcript/log policy
   - [ ] local personal use only
   - [ ] plaintext acceptable for now
   - [ ] future expansion requires retention/redaction review
 
 ## P4 — Small Cleanup
-
-- [ ] Replace deprecated `datetime.utcnow()` usage in `session_store.py`
-  - [ ] use timezone-aware UTC timestamps
-- [ ] Review warnings in test output until clean
+- [x] replace deprecated `datetime.utcnow()` usage in `session_store.py`
+- [ ] review warnings in test output until clean
 
 ## P5 — Maintainability Refactor
-
-- [ ] Refactor root `repl.py` into smaller units
+- [ ] refactor root `repl.py` into smaller units
   - [ ] prompt/session UI
   - [ ] clarification flow
   - [ ] execution/reporting
-- [ ] Add docstrings to:
+- [ ] add docstrings to:
   - [ ] `workflow.py`
   - [ ] `repl.py`
   - [ ] `session_store.py`
 
 ## P6 — Expansion Guardrails
+- [x] keep heuristic planner as default
+- [x] keep model-backed planner optional
+- [x] add explicit planner mode reporting
+- [ ] only formalize `planner_mode` in schema if expansion continues
 
-- [ ] Keep heuristic planner as default
-- [ ] Keep model-backed planner optional
-- [ ] Only expand richer clarification after REPL edge-case tests are committed and stable
-- [ ] Only formalize `planner_mode` in schema if expansion continues
+## Suggested Execution Order
 
----
-
-# Suggested Execution Order
-
-1. decide `ai_engine/`
-2. commit or delete the two untracked test files
-3. rewrite `HANDOFF.md`
-4. wire evals contract into CI
-5. finish REPL/session edge-case tests
-6. strengthen packaging/build validation
-7. document transcript/log policy
-8. clean up `datetime.utcnow()` warnings
-9. do refactor and longer-term maintainability work
-
----
-
-# Git Command Checklist
-
-## Inspect current state
-```bash
-git branch --show-current
-git status --short
-git log --oneline --decorate -10
+1. update and commit `HANDOFF.md` and `GIT_TASKS.md`
+2. verify baseline still passes
+3. add remaining REPL/session end-to-end tests
+4. document transcript/log policy
+5. do maintainability refactor

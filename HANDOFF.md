@@ -1,11 +1,11 @@
 # AI Operator — Current Handoff
 
 ## Current repo state
-- Current branch: `feature/model-backed-planner`
-- Current HEAD: `7db3b7a`
-- Remote branch aligned: `origin/feature/model-backed-planner`
-- Working tree status at audit capture: clean
-- Latest recorded test result: `10 passed`
+- Current branch: `main`
+- Current baseline tag: `model-planner-baseline`
+- Remote branch aligned: `origin/main`
+- Working tree status: verify with `git status --short`
+- Latest verified test result: `18 passed`
 
 ## What is implemented
 - terminal-first local operator
@@ -24,13 +24,11 @@
 - clean audit zip generation
 
 ## Current priorities
-1. harden REPL edge cases
-2. strengthen CI/build verification
-4. keep model-backed planning optional until explicitly verified with real API config
-
-## Known open questions
-- Should `planner_mode` become a formal schema field?
-- Should `evals/` ship in the package?
+1. harden remaining REPL/session edge cases
+2. keep CI/build verification strong
+3. keep model-backed planning optional until explicitly verified with real API config
+4. decide whether `planner_mode` should become a formal schema field
+5. decide whether `evals/` should ship in the package
 
 ## Verification commands
 - python3 -m pytest -q
