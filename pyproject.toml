@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "ai-operator"
 version = "0.1.0"
@@ -7,3 +11,10 @@ dependencies = []
 [project.scripts]
 ai-operator = "ai_operator.__main__:main"
 ai-operator-repl = "ai_operator.repl:main"
+
+[tool.setuptools]
+py-modules = ["config", "logger", "main", "repl", "session_store", "workflow"]
+
+[tool.setuptools.packages.find]
+include = ["ai_operator*", "planner*", "executor*", "evals*"]
+exclude = ["logs*", "workspace*", "readme_examples*", "tests*"]
