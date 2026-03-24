@@ -26,11 +26,9 @@
 ## Current priorities
 1. harden REPL edge cases
 2. strengthen CI/build verification
-3. decide fate of `ai_engine/`
 4. keep model-backed planning optional until explicitly verified with real API config
 
 ## Known open questions
-- Should `ai_engine/` remain in this repo?
 - Should `planner_mode` become a formal schema field?
 - Should `evals/` ship in the package?
 
