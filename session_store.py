@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
@@ -13,7 +13,7 @@ def _session_path(session_id: str) -> Path:
 
 def start_session(session_id: str | None = None) -> str:
     SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
-    resolved = session_id or datetime.utcnow().strftime("%Y%m%dT%H%M%SZ-") + uuid4().hex[:8]
+    resolved = session_id or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ-") + uuid4().hex[:8]
     path = _session_path(resolved)
     if not path.exists():
         append_session_event(resolved, "session_started", {"session_id": resolved})
@@ -30,7 +30,7 @@ def latest_session_id() -> str | None:
 def append_session_event(session_id: str, event_type: str, payload: dict) -> None:
     SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
     row = {
-        "ts": datetime.utcnow().isoformat() + "Z",
+        "ts": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "event_type": event_type,
         "payload": payload,
     }

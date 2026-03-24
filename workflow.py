@@ -4,7 +4,7 @@ from config import CONFIDENCE_THRESHOLD, SUPPORTED_ACTIONS
 from executor.actions import edit_file, file_exists, list_workspace, read_file, validate_filename, write_file
 from planner.classifier import classify
 from planner.generator import generate
-from planner.plan_builder import build_plan
+from planner.planner_interface import plan_request as planner_plan_request
 from planner.schema import ActionPlan
 
 
@@ -52,7 +52,7 @@ def classify_follow_up(user_input: str) -> dict[str, Any]:
 
 
 def plan_request(user_input: str) -> ActionPlan:
-    return build_plan(user_input)
+    return planner_plan_request(user_input)
 
 
 def plan_needs_clarification(plan: ActionPlan) -> bool:
