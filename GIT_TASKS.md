@@ -11,25 +11,23 @@ What is true right now:
 - heuristic planning remains the default
 - the repo is suitable for controlled expansion
 - the main remaining work is:
-  - interactive edge-case hardening
   - documentation truth
+  - remaining REPL/session end-to-end hardening
   - CI/build enforcement
   - maintainability cleanup
 
 ## Priority Checklist
 
 ## P0 — Repo Truth
-- [x] remove `ai_engine/`
-- [x] resolve stale untracked REPL test-file issue
 - [ ] keep `HANDOFF.md` aligned with the current committed repo
 
 ## P1 — Interactive Reliability
 - [x] add clarification prompt interrupt tests
 - [x] add REPL/session edge-case tests
+- [x] add invalid `--resume` session behavior coverage
+- [x] add corrupted session/transcript file coverage
 - [ ] add or finalize tests for:
-  - [ ] overwrite confirm/cancel paths
-  - [ ] invalid `--resume` session ID end-to-end behavior
-  - [ ] corrupted session/transcript files end-to-end behavior
+  - [ ] overwrite confirm/cancel paths end-to-end
 
 ## P2 — CI / Packaging
 - [x] ensure CI runs:
@@ -69,6 +67,6 @@ What is true right now:
 
 1. update and commit `HANDOFF.md` and `GIT_TASKS.md`
 2. verify baseline still passes
-3. add remaining REPL/session end-to-end tests
+3. add remaining overwrite end-to-end coverage
 4. document transcript/log policy
 5. do maintainability refactor
