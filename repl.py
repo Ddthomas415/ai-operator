@@ -1,6 +1,7 @@
 import sys
 
 from logger import log_event
+from repl_ui import handle_builtin_command, show_session_banner
 from session_store import (
     append_session_event,
     format_transcript,
@@ -189,13 +190,7 @@ def main() -> None:
     session_id = _resolve_session_from_args(sys.argv)
     previous_events = load_session_events(session_id)
 
-    print("AI Operator REPL")
-    print("Type 'quit' to exit.")
-    print("Type 'history' to show this session's prompts.\n")
-    print(f"Session: {session_id}")
-    if len(previous_events) > 1:
-        print(f"Resumed with {len(session_prompt_history(session_id))} prior prompt(s).")
-    print("Type 'transcript' to show the saved session transcript.\n")
+    show_session_banner(session_id, len(previous_events))
 
     while True:
         try:
@@ -208,18 +203,7 @@ def main() -> None:
             break
         if not user_input:
             continue
-        if user_input.lower() == "history":
-            print("\nHISTORY:")
-            history = session_prompt_history(session_id)
-            if history:
-                for index, entry in enumerate(history, 1):
-                    print(f"{index}. {entry}")
-            else:
-                print("No prompts yet.")
-            continue
-        if user_input.lower() == "transcript":
-            print("\nTRANSCRIPT:")
-            print(format_transcript(session_id))
+        if handle_builtin_command(user_input, session_id):
             continue
         try:
             run_once(user_input, session_id)
