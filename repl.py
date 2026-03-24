@@ -5,21 +5,8 @@ from repl_clarification import resolve_clarification
 from repl_execution import execute_plan_steps, report_outputs
 from repl_session import load_previous_events, resolve_session_from_args
 from repl_ui import handle_builtin_command, show_session_banner
-from session_store import (
-    append_session_event,
-    format_transcript,
-    latest_session_id,
-    load_session_events,
-    session_prompt_history,
-    start_session,
-)
-from workflow import (
-    classify_follow_up,
-    first_clarification_step,
-    plan_needs_clarification,
-    plan_request,
-    validate_clarification_answer,
-)
+from session_store import append_session_event
+from workflow import classify_follow_up, first_clarification_step, plan_request
 
 EXIT_WORDS = {"quit", "exit"}
 
@@ -117,28 +104,10 @@ def run_once(user_input: str, session_id: str) -> None:
     report_outputs(outputs)
 
 
-def _resolve_session_from_args(argv: list[str]) -> str:
-    """Resolve the session id from CLI arguments.
-
-    Supported forms:
-    - no args: start a new session
-    - --resume <session_id>: resume that exact session
-    - --resume-last: resume the most recent session
-    """
-    if len(argv) >= 3 and argv[1] == "--resume":
-        return start_session(argv[2])
-    if len(argv) >= 2 and argv[1] == "--resume-last":
-        session_id = latest_session_id()
-        if session_id is None:
-            raise SystemExit("No previous session found.")
-        return start_session(session_id)
-    return start_session()
-
-
 def main() -> None:
     """Run the interactive REPL loop for the local operator."""
-    session_id = _resolve_session_from_args(sys.argv)
-    previous_events = load_session_events(session_id)
+    session_id = resolve_session_from_args(sys.argv)
+    previous_events = load_previous_events(session_id)
 
     show_session_banner(session_id, len(previous_events))
 
